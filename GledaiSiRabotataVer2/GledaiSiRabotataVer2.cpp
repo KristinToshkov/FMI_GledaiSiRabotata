@@ -140,8 +140,36 @@ void book_cards_player(vector<string>& players_cards, vector<vector<string>>& pl
 
 }
 
-// Function for handling the player's turn
-void player_turn(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards, vector<vector<string>>& players_booked) {
+void book_cards_computer(vector<string>& computers_cards, vector<vector<string>>& computers_booked)
+{
+    char book = computers_cards[computers_cards.size() - 1][0];
+    int count = 0;
+    if (computers_cards.size() > 3)
+        for (const auto& card : computers_cards) {
+            if (card[0] == book)
+                count++;
+        }
+    if (count >= 4) {
+        vector<string> temp_deck;
+        for (const auto& card : computers_cards) {
+            if (card[0] == book) {
+                temp_deck.push_back(card);
+            }
+        }
+        computers_booked.push_back(temp_deck);
+        computers_cards.erase(
+            std::remove_if(computers_cards.begin(), computers_cards.end(), [book](const std::string& card) {
+                return card[0] == book;  // Compare first character
+                }),
+            computers_cards.end()
+        );
+        cout << "\nComputer has booked " << book << "'s!";
+    }
+
+}
+
+// Function for handling the player's turn in the first phase of the game
+void player_turn_1(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards, vector<vector<string>>& players_booked) {
 
     //If no cards in hand forced draw
     if (players_cards.size() < 1)
@@ -171,8 +199,8 @@ void player_turn(vector<string>& deck, vector<string>& players_cards, vector<str
         book_cards_player(players_cards, players_booked);
     }
 }
-
-void computer_turn(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards)
+// Computers turn in the first phase of the game
+void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards, vector<vector<string>>& computers_booked)
 {
     //If no cards in hand forced draw
     if (computers_cards.size() < 1)
@@ -206,6 +234,7 @@ void computer_turn(vector<string>& deck, vector<string>& players_cards, vector<s
                     }),
                 players_cards.end()
             );
+            book_cards_computer(computers_cards, computers_booked);
         }
         else if (command == "Fish")
         {
@@ -213,6 +242,7 @@ void computer_turn(vector<string>& deck, vector<string>& players_cards, vector<s
             deck.erase(deck.begin(), deck.begin() + 1);
             computers_cards.push_back(drawn_card[0]);
             cout << "Computer has drawn " << drawn_card[0] << endl;
+            book_cards_computer(computers_cards, computers_booked);
 
             if (drawn_card[0][0] == computer_ask) {
                 cout << "\nComputer keeps his turn!";
@@ -236,6 +266,94 @@ void sort_cards(vector<string>& cards)
         });
 }
 
+// Function for handling the players turn in the second phase of the game
+void player_turn_2(vector<vector<string>>& players_booked, vector<vector<string>>& computers_booked) {
+    vector<string> ranks = { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+    string player_ask = "";
+    // Ask for a valid rank
+    while (find(ranks.begin(), ranks.end(), player_ask) != ranks.end()) {
+        cout << "\nAsk for a rank (2-9, T, J, Q, K, A): ";
+        cin >> player_ask;
+    }
+
+    // Process the ask and check if the computer has the cards
+    bool hasCards = false;
+    for (const auto& card : computers_booked) {
+        if (card[0][0] == player_ask[0]) {
+            hasCards = true;
+            players_booked.push_back(card);
+        }
+    }
+    if (hasCards)
+        // Remove all cards starting with
+        computers_booked.erase(
+            remove_if(computers_booked.begin(), computers_booked.end(), [player_ask](const vector<string>& card) {
+                // Assuming you want to check the first string in the vector (card[0])
+                return !card.empty() && card[0][0] == player_ask[0];  // Check first character of the first string in each vector
+                }),
+            computers_booked.end()
+        );
+
+    if (hasCards) {
+        cout << "\nComputer has cards of that rank!" << endl;
+        //Players asks again...
+    }
+    else {
+        cout << "\nComputer has no cards of that rank.";
+        playersTurn = false;
+    }
+}
+
+
+// Computers turn in the second phase of the game
+void computer_turn_2(vector<vector<string>>& computers_booked, vector<vector<string>>& players_booked)
+{
+    vector<string> ranks = { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+
+    // Seed the random number generator
+    srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    // Generate a random index between 0 and ranks.size() - 1
+    int random_index = rand() % ranks.size();
+
+
+    char computer_ask = ranks[random_index][0];
+
+
+    cout << "\nComputer asks for " << computer_ask <<
+        endl << "Type \"Give\" to give or \"Fish\" if you don't have any cards of that rank:";
+    string command = "";
+    cin >> command;
+    while (command != "Give" && command != "Fish") {
+        cout << "\nInvalid command!" << "\nType \"Give\" to give or \"Fish\" if you don't have any cards of that rank:";
+        cin >> command;
+    }
+    if (command == "Give") {
+        for (const auto& card : players_booked) {
+            if (card[0][0] == computer_ask) {
+                computers_booked.push_back(card);
+            }
+        }
+            // Remove all cards starting with
+            players_booked.erase(
+                remove_if(players_booked.begin(), players_booked.end(), [computer_ask](const vector<string>& card) {
+                    return card[0][0] == computer_ask;  // Check first character
+                    }),
+                players_booked.end()
+            );
+    }
+    else if (command == "Fish")
+    {
+
+        cout << "\nComputer's turn ends. Player's turn.";
+            // Player asks...
+            playersTurn = true;
+        
+
+    }
+
+}
+
 
 
 int main() {
@@ -249,25 +367,44 @@ int main() {
     display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
 
     // Game loop
-    while (true) {
+    // Phase 1
+    while (players_cards.size() > 1 && computers_cards.size() > 1) {
         while (playersTurn) {
             sort_cards(players_cards);
-            player_turn(deck, players_cards, computers_cards, players_booked);
+            player_turn_1(deck, players_cards, computers_cards, players_booked);
+         //   system("cls");
             display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
             
         }
         while (!playersTurn) {
             sort_cards(computers_cards);
-            computer_turn(deck, players_cards, computers_cards);
+            computer_turn_1(deck, players_cards, computers_cards, computers_booked);
+         //   system("cls");
             display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
         }
-        if (players_cards.size() >= 52)
-            cout << "Player wins!!!";
-        else if (computers_cards.size() >= 52)
-            cout << "Computer wins!!!";
-        
-
         cout << "\nRemaining cards in deck: " << deck.size() << endl;
     }
+
+    // Phase 2
+    while (players_booked.size() < 13 && computers_booked.size() < 13) {
+        while (playersTurn) {
+            player_turn_2(players_booked, computers_booked);
+        //    system("cls");
+            display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
+        }
+        while (!playersTurn) {
+            computer_turn_2(computers_booked, players_booked);
+      //      system("cls");
+            display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
+            
+        }
+    }
+
+
+
+    if (players_booked.size() >= 13)
+        cout << "Player wins!!!";
+    else if (computers_booked.size() >= 13)
+        cout << "Computer wins!!!";
     return 0;
 }

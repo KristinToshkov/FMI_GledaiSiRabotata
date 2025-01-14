@@ -5,6 +5,9 @@
     {
       "AbsoluteMoniker": "D:0:0:{16F05073-4467-4F95-8B74-70822B0CC8DF}|GledaiSiRabotataVer2\\GledaiSiRabotataVer2.vcxproj|C:\\Users\\Krist\\Documents\\GitHub\\FMI_GledaiSiRabotata\\GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{16F05073-4467-4F95-8B74-70822B0CC8DF}|GledaiSiRabotataVer2\\GledaiSiRabotataVer2.vcxproj|solutionrelative:GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{16F05073-4467-4F95-8B74-70822B0CC8DF}|GledaiSiRabotataVer2\\GledaiSiRabotataVer2.vcxproj|E:\\VISUAL STUDIO\\VC\\TOOLS\\MSVC\\14.41.34120\\INCLUDE\\XMEMORY||{3B902123-F8A7-4915-9F01-361F908088D0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,17 +17,28 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "xmemory",
+              "DocumentMoniker": "E:\\Visual Studio\\VC\\Tools\\MSVC\\14.41.34120\\include\\xmemory",
+              "ToolTip": "E:\\Visual Studio\\VC\\Tools\\MSVC\\14.41.34120\\include\\xmemory",
+              "ViewState": "AgIAAJkIAAAAAAAAAAAvwKgIAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-01-14T13:10:31.6Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "GledaiSiRabotataVer2.cpp",
               "DocumentMoniker": "C:\\Users\\Krist\\Documents\\GitHub\\FMI_GledaiSiRabotata\\GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp",
               "RelativeDocumentMoniker": "GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp",
-              "ToolTip": "C:\\Users\\Krist\\Documents\\GitHub\\FMI_GledaiSiRabotata\\GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp*",
-              "RelativeToolTip": "GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp*",
-              "ViewState": "AgIAAH8AAAAAAAAAAAAAAIEAAAAsAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\Krist\\Documents\\GitHub\\FMI_GledaiSiRabotata\\GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp",
+              "RelativeToolTip": "GledaiSiRabotataVer2\\GledaiSiRabotataVer2.cpp",
+              "ViewState": "AgIAAOgAAAAAAAAAAAAAAPQAAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-01-14T08:43:06.258Z",
               "EditorCaption": ""
