@@ -172,12 +172,12 @@ void book_cards_computer(vector<string>& computers_cards, vector<vector<string>>
 void player_turn_1(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards, vector<vector<string>>& players_booked) {
 
     //If no cards in hand forced draw
-    if (players_cards.size() < 1)
+    if (players_cards.size() < 1 && deck.size() > 0)
     {
         vector<string> drawn_card(deck.begin(), deck.begin() + 1);
         deck.erase(deck.begin(), deck.begin() + 1);
         players_cards.push_back(drawn_card[0]);
-        cout << "You have no cards and have drawn " << drawn_card[0] << endl;
+        cout << "\nYou have no cards and have drawn " << drawn_card[0] << endl;
     }
 
     string player_ask = "";
@@ -205,12 +205,12 @@ void player_turn_1(vector<string>& deck, vector<string>& players_cards, vector<s
 void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards, vector<vector<string>>& computers_booked)
 {
     //If no cards in hand forced draw
-    if (computers_cards.size() < 1)
+    if (computers_cards.size() < 1 && deck.size() > 0)
     {
         vector<string> drawn_card(deck.begin(), deck.begin() + 1);
         deck.erase(deck.begin(), deck.begin() + 1);
         computers_cards.push_back(drawn_card[0]);
-        cout << "Computer has no cards and has drawn " << drawn_card[0] << endl;
+        cout << "\nComputer has no cards and has drawn " << drawn_card[0] << endl;
     }
     int random_index = rand() % computers_cards.size();
     char computer_ask = computers_cards[random_index][0];
@@ -372,22 +372,46 @@ int main() {
 
     // Game loop
     // Phase 1
-    while (players_cards.size() > 1 && computers_cards.size() > 1) {
-        while (playersTurn && deck.size() > 1) {
+    while (deck.size() > 0 && players_cards.size() > 0 && computers_cards.size() > 0) {
+        /*if (deck.size() + players_cards.size() == 4 && computers_cards.size() == 0)
+        {
+            for (const auto& card : deck)
+                players_cards.push_back(card);
+            book_cards_player(players_cards, players_booked);
+            break;
+
+        }
+        else if (deck.size() + computers_cards.size() == 4 && players_cards.size() == 0) {
+            for (const auto& card : deck)
+                computers_cards.push_back(card);
+            book_cards_computer(computers_cards, computers_booked);
+            break;
+        }*/
+
+
+
+        while (playersTurn) {
             sort_cards(players_cards);
             player_turn_1(deck, players_cards, computers_cards, players_booked);
          //   system("cls");
             display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
+            if (deck.size() < 1 && players_cards.size() < 1)
+                break;
         }
-        while (!playersTurn && deck.size() > 1) {
+        cout << "\nRemaining cards in deck: " << deck.size() << endl;
+        while (!playersTurn) {
             sort_cards(computers_cards);
             computer_turn_1(deck, players_cards, computers_cards, computers_booked);
          //   system("cls");
             display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
+            if (deck.size() < 1 && computers_cards.size() < 1)
+                break;
         }
         cout << "\nRemaining cards in deck: " << deck.size() << endl;
     }
-
+    system("cls");
+    cout << "Phase 2 starts now!";
+    display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
     // Phase 2
     while (players_booked.size() < 13 && computers_booked.size() < 13) {
         while (playersTurn && computers_booked.size() > 0) {
