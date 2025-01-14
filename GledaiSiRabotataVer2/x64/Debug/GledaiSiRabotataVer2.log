@@ -1,3 +1,3 @@
 ﻿  GledaiSiRabotataVer2.cpp
-C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\GledaiSiRabotataVer2\GledaiSiRabotataVer2.cpp(360,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\GledaiSiRabotataVer2\GledaiSiRabotataVer2.cpp(364,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   GledaiSiRabotataVer2.vcxproj -> C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\x64\Debug\GledaiSiRabotataVer2.exe

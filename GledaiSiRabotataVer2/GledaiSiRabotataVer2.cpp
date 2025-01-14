@@ -43,10 +43,10 @@ void display_all_cards(const vector<string>& players_cards, const vector<string>
     cout << "\nComputer's cards: ";
     display_cards(computers_cards);
 
-    cout << "\nYour booked cards: ";
+    cout << "\nYour booked cards:\n";
     for (const auto& coup : players_booked)
         display_cards(coup);
-    cout << "\nComputers booked cards: ";
+    cout << "\nComputers booked cards:\n";
     for (const auto& coup : computers_booked)
         display_cards(coup);
 
@@ -81,7 +81,7 @@ bool process_ask(const string& player_ask, vector<string>& computers_cards, vect
     if(hasCards)
         // Remove all cards starting with
         computers_cards.erase(
-            std::remove_if(computers_cards.begin(), computers_cards.end(), [player_ask](const std::string& card) {
+            remove_if(computers_cards.begin(), computers_cards.end(), [player_ask](const string& card) {
                 return card[0] == player_ask[0];  // Check first character
                 }),
             computers_cards.end()
@@ -101,7 +101,7 @@ void draw_card(vector<string>& deck, vector<string>& players_cards, const string
         //Player asks again...
     }
     else {
-        cout << "Your turn ends. Computer's turn.\n";
+        cout << "\nYour turn ends. Computer's turn.\n";
         // Computer asks...
         playersTurn = false;
     }
@@ -130,7 +130,7 @@ void book_cards_player(vector<string>& players_cards, vector<vector<string>>& pl
         }
         players_booked.push_back(temp_deck);
         players_cards.erase(
-            std::remove_if(players_cards.begin(), players_cards.end(), [book](const std::string& card) {
+            remove_if(players_cards.begin(), players_cards.end(), [book](const string& card) {
                 return card[0] == book;  // Compare first character
                 }),
             players_cards.end()
@@ -163,7 +163,7 @@ void book_cards_computer(vector<string>& computers_cards, vector<vector<string>>
                 }),
             computers_cards.end()
         );
-        cout << "\nComputer has booked " << book << "'s!";
+        cout << "\nComputer has booked " << book << "'s!\n";
     }
 
 }
@@ -188,12 +188,14 @@ void player_turn_1(vector<string>& deck, vector<string>& players_cards, vector<s
     bool hasCards = process_ask(player_ask, computers_cards, players_cards);
 
     if (hasCards) {
+        system("cls");
         cout << "\nComputer has cards of that rank!" << endl;
         book_cards_player(players_cards, players_booked);
-        //Players asks again...
+        //Player asks again...
     }
     else {
-        cout << "\nComputer has no cards of that rank.";
+        system("cls");
+        cout << "\nComputer has no cards of that rank.\n";
         // Player draws a card from the deck
         draw_card(deck, players_cards, player_ask);
         book_cards_player(players_cards, players_booked);
@@ -221,10 +223,11 @@ void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector
         cin >> command;
     }
         if (command == "Give") {
+            system("cls");
             for (const auto& card : players_cards) {
                 if (card[0] == computer_ask) {
                     computers_cards.push_back(card);
-                    cout << "Computer took " << card << " from your deck!";
+                    cout << "Computer took " << card << " from your deck!\n";
                 }
             }
             // Remove all cards starting with
@@ -238,6 +241,7 @@ void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector
         }
         else if (command == "Fish")
         {
+            system("cls");
             vector<string> drawn_card(deck.begin(), deck.begin() + 1);
             deck.erase(deck.begin(), deck.begin() + 1);
             computers_cards.push_back(drawn_card[0]);
@@ -245,11 +249,11 @@ void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector
             book_cards_computer(computers_cards, computers_booked);
 
             if (drawn_card[0][0] == computer_ask) {
-                cout << "\nComputer keeps his turn!";
+                cout << "\nComputer keeps his turn!\n";
                 //Computer asks again...
             }
             else {
-                cout << "\nComputer's turn ends. Player's turn.";
+                cout << "\nComputer's turn ends. Player's turn.\n";
                 // Player asks...
                 playersTurn = true;
             }
@@ -261,7 +265,7 @@ void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector
 void sort_cards(vector<string>& cards)
 {
     
-    std::sort(cards.begin(), cards.end(), [](const std::string& a, const std::string& b) {
+    sort(cards.begin(), cards.end(), [](const string& a, const string& b) {
         return a[0] < b[0];  // Compare the first character
         });
 }
@@ -271,7 +275,7 @@ void player_turn_2(vector<vector<string>>& players_booked, vector<vector<string>
     vector<string> ranks = { "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
     string player_ask = "";
     // Ask for a valid rank
-    while (find(ranks.begin(), ranks.end(), player_ask) != ranks.end()) {
+    while (find(ranks.begin(), ranks.end(), player_ask) == ranks.end()) {
         cout << "\nAsk for a rank (2-9, T, J, Q, K, A): ";
         cin >> player_ask;
     }
@@ -369,14 +373,13 @@ int main() {
     // Game loop
     // Phase 1
     while (players_cards.size() > 1 && computers_cards.size() > 1) {
-        while (playersTurn) {
+        while (playersTurn && deck.size() > 1) {
             sort_cards(players_cards);
             player_turn_1(deck, players_cards, computers_cards, players_booked);
          //   system("cls");
             display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
-            
         }
-        while (!playersTurn) {
+        while (!playersTurn && deck.size() > 1) {
             sort_cards(computers_cards);
             computer_turn_1(deck, players_cards, computers_cards, computers_booked);
          //   system("cls");
@@ -387,16 +390,15 @@ int main() {
 
     // Phase 2
     while (players_booked.size() < 13 && computers_booked.size() < 13) {
-        while (playersTurn) {
+        while (playersTurn && computers_booked.size() > 0) {
             player_turn_2(players_booked, computers_booked);
         //    system("cls");
             display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
         }
-        while (!playersTurn) {
+        while (!playersTurn && players_booked.size() > 0) {
             computer_turn_2(computers_booked, players_booked);
       //      system("cls");
             display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
-            
         }
     }
 
