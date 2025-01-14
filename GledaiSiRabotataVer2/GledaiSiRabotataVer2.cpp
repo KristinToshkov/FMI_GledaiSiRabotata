@@ -36,12 +36,21 @@ void display_cards(const vector<string>& cards) {
     cout << endl;
 }
 
-void display_all_cards(const vector<string>& players_cards, const vector<string>& computers_cards) {
+void display_all_cards(const vector<string>& players_cards, const vector<string>& computers_cards, const vector<vector<string>>& players_booked, const vector<vector<string>>& computers_booked) {
     cout << "\nYour cards: ";
     display_cards(players_cards);
 
     cout << "\nComputer's cards: ";
     display_cards(computers_cards);
+
+    cout << "\nYour booked cards: ";
+    for (const auto& coup : players_booked)
+        display_cards(coup);
+    cout << "\nComputers booked cards: ";
+    for (const auto& coup : computers_booked)
+        display_cards(coup);
+
+
 }
 
 bool ask_for_rank(const vector<string>& players_cards, string& player_ask) {
@@ -67,9 +76,17 @@ bool process_ask(const string& player_ask, vector<string>& computers_cards, vect
         if (card[0] == player_ask[0]) {
             hasCards = true;
             players_cards.push_back(card);
-            computers_cards.erase(remove(computers_cards.begin(), computers_cards.end(), card), computers_cards.end());
         }
     }
+    if(hasCards)
+        // Remove all cards starting with
+        computers_cards.erase(
+            std::remove_if(computers_cards.begin(), computers_cards.end(), [player_ask](const std::string& card) {
+                return card[0] == player_ask[0];  // Check first character
+                }),
+            computers_cards.end()
+        );
+
     return hasCards;
 }
 
@@ -90,10 +107,52 @@ void draw_card(vector<string>& deck, vector<string>& players_cards, const string
     }
 }
 
-// Function for handling the player's turn
-void player_turn(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards) {
-    string player_ask = "";
+void book_cards_player(vector<string>& players_cards, vector<vector<string>>& players_booked)
+{
+    char book = players_cards[players_cards.size() - 1][0];
+    int count = 0;
+    if(players_cards.size() > 3)
+    for (const auto& card : players_cards) {
+        if (card[0] == book)
+            count++;
+    }
+    if (count >= 4) {
+        string input;
+        while (input != "Book") {
+            cout << "You have 4 of " << book << "'s, type \"Book\" too book them:";
+            cin >> input;
+        }
+        vector<string> temp_deck;
+        for (const auto& card : players_cards) {
+            if (card[0] == book) {
+                temp_deck.push_back(card);
+            }
+        }
+        players_booked.push_back(temp_deck);
+        players_cards.erase(
+            std::remove_if(players_cards.begin(), players_cards.end(), [book](const std::string& card) {
+                return card[0] == book;  // Compare first character
+                }),
+            players_cards.end()
+        );
+        cout << "\nYou have booked " << book << "'s!";
+    }
 
+}
+
+// Function for handling the player's turn
+void player_turn(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards, vector<vector<string>>& players_booked) {
+
+    //If no cards in hand forced draw
+    if (players_cards.size() < 1)
+    {
+        vector<string> drawn_card(deck.begin(), deck.begin() + 1);
+        deck.erase(deck.begin(), deck.begin() + 1);
+        players_cards.push_back(drawn_card[0]);
+        cout << "You have no cards and have drawn " << drawn_card[0] << endl;
+    }
+
+    string player_ask = "";
     // Ask for a valid rank
     bool valid = ask_for_rank(players_cards, player_ask);
 
@@ -102,19 +161,27 @@ void player_turn(vector<string>& deck, vector<string>& players_cards, vector<str
 
     if (hasCards) {
         cout << "\nComputer has cards of that rank!" << endl;
+        book_cards_player(players_cards, players_booked);
         //Players asks again...
     }
     else {
         cout << "\nComputer has no cards of that rank.";
         // Player draws a card from the deck
         draw_card(deck, players_cards, player_ask);
+        book_cards_player(players_cards, players_booked);
     }
-
-    
 }
 
 void computer_turn(vector<string>& deck, vector<string>& players_cards, vector<string>& computers_cards)
 {
+    //If no cards in hand forced draw
+    if (computers_cards.size() < 1)
+    {
+        vector<string> drawn_card(deck.begin(), deck.begin() + 1);
+        deck.erase(deck.begin(), deck.begin() + 1);
+        computers_cards.push_back(drawn_card[0]);
+        cout << "Computer has no cards and has drawn " << drawn_card[0] << endl;
+    }
     int random_index = rand() % computers_cards.size();
     char computer_ask = computers_cards[random_index][0];
     cout << "\nComputer asks for " << computer_ask << 
@@ -129,10 +196,16 @@ void computer_turn(vector<string>& deck, vector<string>& players_cards, vector<s
             for (const auto& card : players_cards) {
                 if (card[0] == computer_ask) {
                     computers_cards.push_back(card);
-                    players_cards.erase(remove(players_cards.begin(), players_cards.end(), card), players_cards.end());
                     cout << "Computer took " << card << " from your deck!";
                 }
             }
+            // Remove all cards starting with
+            players_cards.erase(
+                std::remove_if(players_cards.begin(), players_cards.end(), [computer_ask](const std::string& card) {
+                    return card[0] == computer_ask;  // Check first character
+                    }),
+                players_cards.end()
+            );
         }
         else if (command == "Fish")
         {
@@ -155,23 +228,38 @@ void computer_turn(vector<string>& deck, vector<string>& players_cards, vector<s
 
 }
 
+void sort_cards(vector<string>& cards)
+{
+    
+    std::sort(cards.begin(), cards.end(), [](const std::string& a, const std::string& b) {
+        return a[0] < b[0];  // Compare the first character
+        });
+}
+
+
+
 int main() {
     srand(time(0));
     vector<string> deck = generateDeck();
     vector<string> players_cards = draw_6_random_cards(deck);
     vector<string> computers_cards = draw_6_random_cards(deck);
+    vector<vector<string>> players_booked = {};
+    vector<vector<string>> computers_booked = {};
 
-    display_all_cards(players_cards, computers_cards);
+    display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
 
-    // Call the player's turn
+    // Game loop
     while (true) {
         while (playersTurn) {
-            player_turn(deck, players_cards, computers_cards);
-            display_all_cards(players_cards, computers_cards);
+            sort_cards(players_cards);
+            player_turn(deck, players_cards, computers_cards, players_booked);
+            display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
+            
         }
         while (!playersTurn) {
+            sort_cards(computers_cards);
             computer_turn(deck, players_cards, computers_cards);
-            display_all_cards(players_cards, computers_cards);
+            display_all_cards(players_cards, computers_cards, players_booked, computers_booked);
         }
         if (players_cards.size() >= 52)
             cout << "Player wins!!!";
