@@ -1,3 +1,5 @@
 ﻿  GledaiSiRabotataVer2.cpp
-C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\GledaiSiRabotataVer2\GledaiSiRabotataVer2.cpp(364,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\GledaiSiRabotataVer2\GledaiSiRabotataVer2.cpp(33,16): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\GledaiSiRabotataVer2\GledaiSiRabotataVer2.cpp(282,11): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\GledaiSiRabotataVer2\GledaiSiRabotataVer2.cpp(391,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   GledaiSiRabotataVer2.vcxproj -> C:\Users\Krist\Documents\GitHub\FMI_GledaiSiRabotata\x64\Debug\GledaiSiRabotataVer2.exe

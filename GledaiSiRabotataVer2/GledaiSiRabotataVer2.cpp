@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <algorithm>
+//#include <algorithm>
 #include <ctime>
 
 using namespace std;
@@ -19,9 +19,26 @@ vector<string> generateDeck() {
     return deck;
 }
 
+// Manual swap function (since <algorithm> is not allowed)
+void manual_swap(std::string& a, std::string& b) {
+    std::string temp = a;
+    a = b;
+    b = temp;
+}
+
+// Custom Fisher–Yates shuffle without <algorithm>
+void custom_shuffle(std::vector<std::string>& deck) {
+    std::srand(static_cast<unsigned int>(std::time(0)));  // Seed random generator
+
+    for (int i = deck.size() - 1; i > 0; --i) {
+        int j = std::rand() % (i + 1);  // Random index between 0 and i
+        manual_swap(deck[i], deck[j]);  // Swap manually
+    }
+}
+
 vector<string> draw_6_random_cards(vector<string>& deck) {
     vector<string> drawn_cards;
-    random_shuffle(deck.begin(), deck.end());
+    custom_shuffle(deck);
     for (int i = 0; i < 6; ++i) {
         drawn_cards.push_back(deck.back());
         deck.pop_back();
@@ -186,15 +203,13 @@ void player_turn_1(vector<string>& deck, vector<string>& players_cards, vector<s
 
     // Process the ask and check if the computer has the cards
     bool hasCards = process_ask(player_ask, computers_cards, players_cards);
-
+    system("cls");
     if (hasCards) {
-        system("cls");
         cout << "\nComputer has cards of that rank!" << endl;
         book_cards_player(players_cards, players_booked);
         //Player asks again...
     }
     else {
-        system("cls");
         cout << "\nComputer has no cards of that rank.\n";
         // Player draws a card from the deck
         draw_card(deck, players_cards, player_ask);
@@ -222,8 +237,9 @@ void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector
         cout << "\nInvalid command!" << "\nType \"Give\" to give or \"Fish\" if you don't have any cards of that rank:";
         cin >> command;
     }
+    system("cls");
         if (command == "Give") {
-            system("cls");
+            
             for (const auto& card : players_cards) {
                 if (card[0] == computer_ask) {
                     computers_cards.push_back(card);
@@ -241,7 +257,7 @@ void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector
         }
         else if (command == "Fish")
         {
-            system("cls");
+            
             vector<string> drawn_card(deck.begin(), deck.begin() + 1);
             deck.erase(deck.begin(), deck.begin() + 1);
             computers_cards.push_back(drawn_card[0]);
@@ -262,13 +278,22 @@ void computer_turn_1(vector<string>& deck, vector<string>& players_cards, vector
 
 }
 
-void sort_cards(vector<string>& cards)
-{
-    
-    sort(cards.begin(), cards.end(), [](const string& a, const string& b) {
-        return a[0] < b[0];  // Compare the first character
-        });
+void sort_cards(vector<string>& cards) {
+    int n = cards.size();
+
+    // Bubble Sort based on the first character
+    for (int i = 0; i < n - 1; ++i) {
+        for (int j = 0; j < n - i - 1; ++j) {
+            if (cards[j][0] > cards[j + 1][0]) {
+                // Manual swap without <algorithm>
+                string temp = cards[j];
+                cards[j] = cards[j + 1];
+                cards[j + 1] = temp;
+            }
+        }
+    }
 }
+
 
 // Function for handling the players turn in the second phase of the game
 void player_turn_2(vector<vector<string>>& players_booked, vector<vector<string>>& computers_booked) {
@@ -288,6 +313,7 @@ void player_turn_2(vector<vector<string>>& players_booked, vector<vector<string>
             players_booked.push_back(card);
         }
     }
+    system("cls");
     if (hasCards)
         // Remove all cards starting with
         computers_booked.erase(
@@ -333,6 +359,7 @@ void computer_turn_2(vector<vector<string>>& computers_booked, vector<vector<str
         cin >> command;
     }
     if (command == "Give") {
+        system("cls");
         for (const auto& card : players_booked) {
             if (card[0][0] == computer_ask) {
                 computers_booked.push_back(card);
@@ -348,7 +375,7 @@ void computer_turn_2(vector<vector<string>>& computers_booked, vector<vector<str
     }
     else if (command == "Fish")
     {
-
+        system("cls");
         cout << "\nComputer's turn ends. Player's turn.";
             // Player asks...
             playersTurn = true;
